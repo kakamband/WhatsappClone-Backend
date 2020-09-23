@@ -3,6 +3,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import Messages from './dbMessages.js'
 import Pusher from 'pusher'
+import cors from 'cors'
 
 // app config
 const app = express()
@@ -10,11 +11,7 @@ const port = process.env.PORT || 9000
 
 // middleware
 app.use(express.json())
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Headers', '*')
-  next()
-})
+app.use(cors())
 
 // db config
 const connection_url = 'mongodb+srv://admin:26OfqxKFtCuHdOhV@cluster0.6wq83.mongodb.net/whatsappdb?retryWrites=true&w=majority'
@@ -48,7 +45,9 @@ db.once('open', () => {
       pusher.trigger('messages', 'inserted',
         {
           name: messageDetails.name,
-          message: messageDetails.message
+          message: messageDetails.message,
+          timestamp: messageDetails.timestamp,
+          received: messageDetails.received
         }
       )
     }
